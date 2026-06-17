@@ -16,7 +16,14 @@ let highScore = 0;
 // 2. Setup microphone
 async function setupAudio() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Disabling mobile audio enhancements prevents the mic from auto-boosting silence
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                echoCancellation: false,
+                autoGainControl: false,
+                noiseSuppression: false
+            } 
+        });
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
@@ -67,27 +74,28 @@ scene("game", () => {
         area(),
         body({ isStatic: true }) // isStatic means the player will bump into it and stop
     ]);
-    // --- THE NEW SKY LIMIT LINE ---
+  // --- THE NEW SKY LIMIT LINE ---
     add([
-        rect(width(), 10), // A line 10 pixels thick
-        pos(0, 50),        // Placed 50 pixels down from the very top
+        rect(width(), 10), 
+        pos(0, 65),        // Moved down slightly to 65 to fit the text above it
         area(),
-        body({ isStatic: true }), // Unbreakable wall
-        color(255, 255, 255)      // White color
+        body({ isStatic: true }), 
+        color(255, 255, 255)      
     ]);
-// UI: Current Score Text (Larger & Center-Left)
-            const scoreText = add([
-                text("Naam Japs: 0", { size: 48 }), // Increased size to 48
-                pos(40, height() / 2 - 20),         // Pushed down to the center-left
-                color(255, 255, 255)                // Added white color so it pops against Saffron
-            ]);
 
-            // UI: High Score Text (Larger & Center-Left)
-            const highScoreText = add([
-                text("High Score: " + highScore, { size: 28 }), // Increased size to 28
-                pos(40, height() / 2 + 40),                     // Placed directly below the main score
-                color(0, 0, 0) 
-            ]);
+    // UI: Current Score Text (Smaller & Top-Left)
+    const scoreText = add([
+        text("Naam Japs: 0", { size: 26 }), // Reduced size for mobile
+        pos(16, 12),                        // Placed near the top-left corner
+        color(255, 255, 255) 
+    ]);
+
+    // UI: High Score Text (Smaller & Top-Left)
+    const highScoreText = add([
+        text("High Score: " + highScore, { size: 16 }), 
+        pos(16, 42),                        // Tucked right under the main score
+        color(0, 0, 0) 
+    ]);
 
     // 4. Game Loop
     onUpdate(() => {
@@ -102,7 +110,7 @@ scene("game", () => {
         // --- THE NEW SCORING LOGIC ---
         
         // If volume is high enough to trigger a jump...
-      /*  if (averageVolume > 10) {
+      /*  if (averageVolume > 18) {
             player.jump(250); // Keep them floating
             
             // If they weren't already chanting, this is a NEW chant!
@@ -113,7 +121,7 @@ scene("game", () => {
             }
         } 
         // If the volume drops low (they stopped to take a breath)...
-        else if (averageVolume < 5) {
+        else if (averageVolume < 12) {
             isChanting = false; // Reset the switch so the NEXT name counts!
         }*/
        // --- UPGRADED SCORING LOGIC ---
