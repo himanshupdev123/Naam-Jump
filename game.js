@@ -15,26 +15,21 @@ let highScore = 0;
 
 // 2. Setup microphone
 // 2. Setup microphone
+// 2. Setup microphone
 async function setupAudio() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: {
-                echoCancellation: false,
-                autoGainControl: false,
-                noiseSuppression: false
-            } 
-        });
+        // Revert to default audio to let the phone handle the mic naturally
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        // --- THE MOBILE FIX: WAKE UP THE MIC ---
+        // KEEP THIS: iOS still requires the mic to be explicitly "woken up"
         if (audioContext.state === 'suspended') {
             await audioContext.resume();
         }
 
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
-        // ... (keep the rest of the function exactly as it is)
         microphone.connect(analyser);
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -115,52 +110,32 @@ scene("game", () => {
         for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
         let averageVolume = sum / dataArray.length;
 
-        // --- THE NEW SCORING LOGIC ---
-        
-        // If volume is high enough to trigger a jump...
-      /*  if (averageVolume > 12) {
-            player.jump(250); // Keep them floating
-            
-            // If they weren't already chanting, this is a NEW chant!
-            if (!isChanting) {
-                isChanting = true; // Flip the switch
-                score += 1;        // Add exactly 1 point
-                scoreText.text = "Naam Japs: " + score; // Update the screen
-            }
-        } 
-        // If the volume drops low (they stopped to take a breath)...
-        else if (averageVolume < 06) {
-            isChanting = false; // Reset the switch so the NEXT name counts!
-        }*/
-       // --- UPGRADED SCORING LOGIC ---
-        timeSinceLastChant += dt(); // Tracks time passing
-        let volumeSpike = averageVolume - lastVolume; // Checks for sudden jumps in volume
+    // --- UPGRADED SCORING LOGIC ---
+        timeSinceLastChant += dt(); 
+        let volumeSpike = averageVolume - lastVolume; 
 
-        if (averageVolume > 10) {
-             player.jump(250);
-          /*  // Safe flight logic (prevents disappearing glitch)
-            if (player.pos.y > 65) {
-                player.vel.y = -250; 
-            } else {
-                player.vel.y = 0; 
-            }*/
+        // RAISED THRESHOLD: 40 ignores the phone's auto-boosted background noise
+        if (averageVolume > 40) {
+            player.jump(250);
             
             // CONDITION 1: Fresh chant after a pause
             if (!isChanting) {
                 isChanting = true; 
                 score += 1;        
                 scoreText.text = "Naam Japs: " + score; 
-                timeSinceLastChant = 0; // Reset timer
+                timeSinceLastChant = 0; 
             }
             // CONDITION 2: Continuous chanting ("Ram Ram Ram")
-            else if (volumeSpike > 3 && timeSinceLastChant > 0.25) {
+            // Raised the spike required to 5 so background static doesn't trigger points
+            else if (volumeSpike > 5 && timeSinceLastChant > 0.25) {
                 score += 1;
                 scoreText.text = "Naam Japs: " + score;
-                timeSinceLastChant = 0; // Reset timer
+                timeSinceLastChant = 0; 
             }
         } 
-        else if (averageVolume < 8) {
-            isChanting = false; // Reset switch
+        // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
+        else if (averageVolume < 25) {
+            isChanting = false; 
         }
 
         // Save current volume to compare against the next frame
