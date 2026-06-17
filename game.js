@@ -14,9 +14,9 @@ let dataArray;
 let highScore = 0; 
 
 // 2. Setup microphone
+// 2. Setup microphone
 async function setupAudio() {
     try {
-        // Disabling mobile audio enhancements prevents the mic from auto-boosting silence
         const stream = await navigator.mediaDevices.getUserMedia({ 
             audio: {
                 echoCancellation: false,
@@ -24,9 +24,17 @@ async function setupAudio() {
                 noiseSuppression: false
             } 
         });
+        
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // --- THE MOBILE FIX: WAKE UP THE MIC ---
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
+        // ... (keep the rest of the function exactly as it is)
         microphone.connect(analyser);
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -110,7 +118,7 @@ scene("game", () => {
         // --- THE NEW SCORING LOGIC ---
         
         // If volume is high enough to trigger a jump...
-      /*  if (averageVolume > 18) {
+      /*  if (averageVolume > 12) {
             player.jump(250); // Keep them floating
             
             // If they weren't already chanting, this is a NEW chant!
@@ -121,7 +129,7 @@ scene("game", () => {
             }
         } 
         // If the volume drops low (they stopped to take a breath)...
-        else if (averageVolume < 12) {
+        else if (averageVolume < 06) {
             isChanting = false; // Reset the switch so the NEXT name counts!
         }*/
        // --- UPGRADED SCORING LOGIC ---
