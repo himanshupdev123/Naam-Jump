@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naam Jump</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #F09D22; /* Saffron Background */
+            font-family: sans-serif;
+            overflow: hidden; 
+        }
+        
+        /* The Glass Card Container */
+        #start-menu {
+            position: absolute;
+            top: 50%;                              /* Push down by 50% */
+            left: 50%;                             /* Push right by 50% */
+            transform: translate(-50%, -50%);      /* Center it perfectly */
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            min-width: 300px;                      /* Prevents it from squishing */
+        }
+
+        /* The Game Title */
+        h1 {
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* The Instructions Text */
+        p {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            max-width: 400px;
+        }
+
+        /* The Start Button */
+        #start-btn {
+            background-color: white;
+            color: #F09D22;
+            border: none;
+            padding: 15px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Hover effect for the button */
+        #start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    
+
+    
+    <div id="start-menu">
+        <h1>Naam Jump</h1>
+        <p>Chant continuously to float. Take a breath and chant again to increase your Naam Japs!</p>
+        <button id="start-btn">Start Mic & Play</button>
+    </div>
+
+    <script src="https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js"></script>
+    <script src="game.js"></script>
+
+</body>
+</html>
