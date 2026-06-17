@@ -44,7 +44,7 @@ scene("game", () => {
     // The Player
     const player = add([
         rect(40, 40),
-        pos(width() / 4, height() / 2),
+       pos(width() / 2.5, height() * 0.2),
         area(),
         body(),
         color(255, 100, 100)
