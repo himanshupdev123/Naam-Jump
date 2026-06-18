@@ -127,14 +127,23 @@ scene("game", () => {
             }
             // CONDITION 2: Continuous chanting ("Ram Ram Ram")
             // Raised the spike required to 5 so background static doesn't trigger points
-            else if (volumeSpike > 5 && timeSinceLastChant > 0.25) {
+            else if (volumeSpike > 5 && timeSinceLastChant > 0.3) {
                 score += 1;
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
         } 
+            // TIER 2: THE SUSTAIN (Long, flowing mantras dropping in volume)
+        else if (averageVolume > 15) {
+            // Safe hover logic for Tier 2 as well!
+            if (player.pos.y > 65) {
+                player.vel.y = -50; // Gentle upward push to perfectly counter gravity
+            } else {
+                player.vel.y = 0;
+            }
+        }
         // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
-        else if (averageVolume < 25) {
+        else if (averageVolume < 10) {
             isChanting = false; 
         }
 
