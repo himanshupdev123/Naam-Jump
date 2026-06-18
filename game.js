@@ -162,7 +162,7 @@ scene("game", () => {
 // 6. The Game Over Scene
 scene("gameover", (finalScore) => {
     add([
-        text("Oops! You stopped chanting.\n\nTotal Japs: " + finalScore + " \nHigh Score: " + highScore +, { 
+        text("Oops! You stopped chanting.\n\nTotal Japs: " + finalScore + " (Approx)\nHigh Score: " + highScore + " (Approx)", { 
             size: 32,             // Reduced from 40 for mobile screens
             width: width() - 40,  // Tells Kaboom to wrap the text so it never goes off-screen
             align: "center" 
