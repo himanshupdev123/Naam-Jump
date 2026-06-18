@@ -110,29 +110,28 @@ scene("game", () => {
         for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
         let averageVolume = sum / dataArray.length;
 
-  // --- UPGRADED SCORING LOGIC ---
+    // --- UPGRADED SCORING LOGIC ---
         timeSinceLastChant += dt(); 
         let volumeSpike = averageVolume - lastVolume; 
 
         // RAISED THRESHOLD: 40 ignores the phone's auto-boosted background noise
         if (averageVolume > 40) {
+            player.jump(250);
             
             // CONDITION 1: Fresh chant after a pause
             if (!isChanting) {
-                player.jump(250);  // <-- THE PUSH
                 isChanting = true; 
-                score += 1;        // <-- THE INCREMENT
+                score += 1;        
                 scoreText.text = "Naam Japs: " + score; 
                 timeSinceLastChant = 0; 
             }
             // CONDITION 2: Continuous chanting ("Ram Ram Ram")
+            // Raised the spike required to 5 so background static doesn't trigger points
             else if (volumeSpike > 5 && timeSinceLastChant > 0.25) {
-                player.jump(250);  // <-- THE PUSH
-                score += 1;        // <-- THE INCREMENT
+                score += 1;
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
-           
         } 
         // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
         else if (averageVolume < 25) {
@@ -141,6 +140,7 @@ scene("game", () => {
 
         // Save current volume to compare against the next frame
         lastVolume = averageVolume;
+
        
     });
 
