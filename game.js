@@ -16,32 +16,42 @@ let highScore = 0;
 // 2. Setup microphone
 // 2. Setup microphone
 // 2. Setup microphone
+// 2. Setup microphone
 async function setupAudio() {
     try {
-        // Revert to default audio to let the phone handle the mic naturally
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // KEEP THIS: iOS still requires the mic to be explicitly "woken up"
+        // 1. Give instant visual feedback so the user knows it's processing
+        document.getElementById('start-btn').innerText = "Loading...";
+
+        // 2. WAKE UP THE AUDIO ENGINE FIRST (Must happen instantly on click!)
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContext();
         if (audioContext.state === 'suspended') {
             await audioContext.resume();
         }
 
+        // 3. NOW ask for the microphone (Code pauses here until they click Allow)
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // 4. Connect everything together
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
         microphone.connect(analyser);
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         
+        // 5. Hide the menu and start the game!
         document.getElementById('start-menu').style.display = 'none';
         go("game"); 
+        
     } catch (err) {
         console.error("Microphone error:", err);
-        alert("We need microphone access to play!");
+        alert(
+            "Microphone Access Blocked! 🎙️\n\n" +
+            "Please check your Chrome site settings to allow Microphone access for this website."
+        );
+        document.getElementById('start-btn').innerText = "Mic Blocked - Read Alert";
     }
 }
-
 document.getElementById('start-btn').addEventListener('click', setupAudio);
 
 // 3. The Main Game Scene
