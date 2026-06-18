@@ -4,7 +4,7 @@ kaboom({
 });
 
 // Soft gravity
-setGravity(300);
+setGravity(120);
 
 // Global variables
 let audioContext;
@@ -60,6 +60,7 @@ scene("game", () => {
     let isChanting = false; // <-- OUR NEW "BREATH DETECTOR" SWITCH
     let lastVolume = 0; 
     let timeSinceLastChant = 0;
+    let userMaxVolume = 30;
 
     // The Player
     const player = add([
@@ -121,30 +122,56 @@ scene("game", () => {
         let averageVolume = sum / dataArray.length;
 
     // --- UPGRADED SCORING LOGIC ---
+       // --- AUTO-CALIBRATING ENGINE ---
         timeSinceLastChant += dt(); 
         let volumeSpike = averageVolume - lastVolume; 
 
-        // RAISED THRESHOLD: 40 ignores the phone's auto-boosted background noise
-        if (averageVolume > 40) {
-            player.jump(250);
+        // 1. Learn their voice: If they are louder than the current max, set a new max!
+        if (averageVolume > userMaxVolume) {
+            userMaxVolume = averageVolume;
+        }
+
+        // 2. Adapt over time: Slowly forget the max volume. 
+        // If they decide to chant softer later, the game adapts downward!
+        userMaxVolume -= dt() * 5; // Drops by 5 volume points every second
+        if (userMaxVolume < 20) userMaxVolume = 20; // Hard limit so background silence isn't counted
+
+        // 3. Set the thresholds dynamically based on THEIR specific phone and voice
+        let jumpThreshold = userMaxVolume * 0.70;   // Trigger a jump at 70% of their normal volume
+        let hoverThreshold = userMaxVolume * 0.40;  // Hover at 40%
+        let breathThreshold = userMaxVolume * 0.25; // Reset the breath at 25%
+
+        // --- DYNAMIC SCORING LOGIC ---
+        
+        // Notice we are now using 'jumpThreshold' instead of a hardcoded '40'
+        if (averageVolume > jumpThreshold) {
             
             // CONDITION 1: Fresh chant after a pause
             if (!isChanting) {
+                player.jump(150);  
                 isChanting = true; 
                 score += 1;        
                 scoreText.text = "Naam Japs: " + score; 
                 timeSinceLastChant = 0; 
             }
             // CONDITION 2: Continuous chanting ("Ram Ram Ram")
-            // Raised the spike required to 5 so background static doesn't trigger points
             else if (volumeSpike > 5 && timeSinceLastChant > 0.25) {
-                score += 1;
+                player.jump(150);  
+                score += 1;        
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
+            else {
+                // THE COAST: Now uses the dynamic hover threshold
+                if (player.pos.y > 65) {
+                    player.vel.y = -30; 
+                } else {
+                    player.vel.y = 0;
+                }
+            }
         } 
-        // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
-        else if (averageVolume < 25) {
+        // The game now knows exactly what "silence" means for their specific mic
+        else if (averageVolume < breathThreshold) {
             isChanting = false; 
         }
 
