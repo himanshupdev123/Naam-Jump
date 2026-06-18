@@ -111,36 +111,41 @@ scene("game", () => {
         let averageVolume = sum / dataArray.length;
 
     // --- UPGRADED SCORING LOGIC ---
+     // --- UPGRADED 3-TIER SCORING LOGIC ---
         timeSinceLastChant += dt(); 
         let volumeSpike = averageVolume - lastVolume; 
 
-        // RAISED THRESHOLD: 40 ignores the phone's auto-boosted background noise
-        if (averageVolume > 40) {
-            player.jump(250);
+        // TIER 1: THE JUMP (Strong, distinct chants like "OM" or "RAM")
+        if (averageVolume > 35) {
+            player.jump(250); // Big boost upward
             
-            // CONDITION 1: Fresh chant after a pause
+            // Condition A: Fresh chant after a pause
             if (!isChanting) {
                 isChanting = true; 
                 score += 1;        
                 scoreText.text = "Naam Japs: " + score; 
                 timeSinceLastChant = 0; 
             }
-            // CONDITION 2: Continuous chanting ("Ram Ram Ram")
-            // Raised the spike required to 5 so background static doesn't trigger points
-            else if (volumeSpike > 5 && timeSinceLastChant > 0.25) {
+            // Condition B: Continuous chanting (Syllable spike)
+            else if (volumeSpike > 5 && timeSinceLastChant > 0.3) {
                 score += 1;
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
         } 
-        // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
-        else if (averageVolume < 25) {
-            isChanting = false; 
+        // TIER 2: THE SUSTAIN (Long, flowing mantras dropping in volume)
+        else if (averageVolume > 15) {
+            // They are still making sound, just quieter.
+            // We apply a gentle upward push (-50) to fight gravity so they don't fall!
+            player.vel.y = -50; 
+        }
+        // TIER 3: THE BREATH (Silence)
+        else if (averageVolume < 10) {
+            isChanting = false; // Reset the counter for the next clear word
         }
 
         // Save current volume to compare against the next frame
         lastVolume = averageVolume;
-
        
     });
 
