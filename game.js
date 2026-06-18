@@ -11,7 +11,8 @@ let audioContext;
 let analyser;
 let microphone;
 let dataArray;
-let highScore = 0; 
+// Check the browser's memory for a saved high score. If it's empty, start at 0.
+let highScore = parseInt(localStorage.getItem('naamJumpHighScore')) || 0;
 
 // 2. Setup microphone
 // 2. Setup microphone
@@ -145,9 +146,13 @@ scene("game", () => {
     });
 
     // 5. Game Over Logic
+// 5. Game Over Logic
     player.onCollide("ground", () => {
         if (score > highScore) {
-            highScore = score;
+            highScore = score; // Update the variable
+            
+            // NEW: Save it permanently into the browser's memory!
+            localStorage.setItem('naamJumpHighScore', highScore);
         }
         go("gameover", score); 
     });
