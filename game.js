@@ -132,15 +132,7 @@ scene("game", () => {
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
-            else {
-                // THE COAST: Since it only jumps when scoring now, this gently 
-                // holds the block in the air while you finish the rest of the word!
-                if (player.pos.y > 65) {
-                    player.vel.y = -50; 
-                } else {
-                    player.vel.y = 0;
-                }
-            }
+           
         } 
         // RAISED RESET: 25 ensures the game knows you took a breath, even with AGC on
         else if (averageVolume < 25) {
