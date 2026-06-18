@@ -161,14 +161,14 @@ scene("game", () => {
                 scoreText.text = "Naam Japs: " + score;
                 timeSinceLastChant = 0; 
             }
-            else {
+       /*     else {
                 // THE COAST: Now uses the dynamic hover threshold
                 if (player.pos.y > 65) {
                     player.vel.y = -30; 
                 } else {
                     player.vel.y = 0;
                 }
-            }
+            } */
         } 
         // The game now knows exactly what "silence" means for their specific mic
         else if (averageVolume < breathThreshold) {
