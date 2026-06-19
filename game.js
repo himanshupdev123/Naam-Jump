@@ -161,31 +161,53 @@ scene("game", () => {
 // 6. The Game Over Scene
 // 6. The Game Over Scene
 scene("gameover", (finalScore) => {
+    // 1. The Main Score Text
     add([
         text("Oops! You stopped chanting.\n\nTotal Japs: " + finalScore + " (Approx)\nHigh Score: " + highScore + " (Approx)", { 
-            size: 32,             // Reduced from 40 for mobile screens
-            width: width() - 40,  // Tells Kaboom to wrap the text so it never goes off-screen
+            size: 32,             
+            width: width() - 40,  
             align: "center" 
         }),
-        pos(width() / 2, height() / 2 - 50),
+        pos(width() / 2, height() / 2 - 80), // Pushed up slightly to make room for two buttons
         anchor("center")
     ]);
 
-    // --- NEW SHARE SCORE BUTTON ---
+    // 2. --- NEW PLAY AGAIN BUTTON ---
     add([
         rect(200, 50, { radius: 12 }),
-        pos(width() / 2, height() / 2 + 60), // Tucked neatly under the score
+        pos(width() / 2, height() / 2 + 40),
         anchor("center"),
-        color(100, 200, 100),                // A nice WhatsApp-style green
+        color(100, 150, 255),                // A nice calm blue
         area(),
-        "share-btn"
+        "play-btn"                           // Tagged specifically as the play button
+    ]);
+
+    add([
+        text("Play Again", { size: 20 }),
+        pos(width() / 2, height() / 2 + 40),
+        anchor("center"),
+        color(255, 255, 255)                 // White text
+    ]);
+
+    // Only restart the game if they specifically click THIS button
+    onClick("play-btn", () => go("game"));
+
+
+    // 3. --- SHARE SCORE BUTTON ---
+    add([
+        rect(200, 50, { radius: 12 }),
+        pos(width() / 2, height() / 2 + 110), // Placed neatly below the Play button
+        anchor("center"),
+        color(100, 200, 100),                 // WhatsApp-style green
+        area(),
+        "share-btn"                           // Tagged specifically as the share button
     ]);
 
     add([
         text("Share Score", { size: 20 }),
-        pos(width() / 2, height() / 2 + 60),
+        pos(width() / 2, height() / 2 + 110),
         anchor("center"),
-        color(0, 0, 0)
+        color(0, 0, 0)                        // Black text
     ]);
 
     // Triggers your phone's native sharing menu
@@ -201,19 +223,7 @@ scene("gameover", (finalScore) => {
             alert('Your browser does not support sharing.');
         }
     });
-    // --- END SHARE BUTTON ---
 
-    add([
-        text("Tap anywhere or press SPACE to Chant Again!", { 
-            size: 20,             
-            width: width() - 40,  
-            align: "center"
-        }),
-        pos(width() / 2, height() / 2 + 150), // Pushed down slightly so it doesn't overlap the button
-        anchor("center"),
-        color(150, 150, 255)
-    ]);
-
-    onClick(() => go("game"));
+    // We can keep the spacebar shortcut active for laptop users!
     onKeyPress("space", () => go("game"));
 });
