@@ -171,13 +171,45 @@ scene("gameover", (finalScore) => {
         anchor("center")
     ]);
 
+    // --- NEW SHARE SCORE BUTTON ---
+    add([
+        rect(200, 50, { radius: 12 }),
+        pos(width() / 2, height() / 2 + 60), // Tucked neatly under the score
+        anchor("center"),
+        color(100, 200, 100),                // A nice WhatsApp-style green
+        area(),
+        "share-btn"
+    ]);
+
+    add([
+        text("Share Score", { size: 20 }),
+        pos(width() / 2, height() / 2 + 60),
+        anchor("center"),
+        color(0, 0, 0)
+    ]);
+
+    // Triggers your phone's native sharing menu
+    onClick("share-btn", () => {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Naam Jump',
+                text: 'I just scored ' + finalScore + ' Japs on Naam Jump! Can you beat my high score of ' + highScore + '?',
+                url: window.location.href, 
+            })
+            .catch((error) => console.log('Error sharing:', error));
+        } else {
+            alert('Your browser does not support sharing.');
+        }
+    });
+    // --- END SHARE BUTTON ---
+
     add([
         text("Tap anywhere or press SPACE to Chant Again!", { 
-            size: 20,             // Reduced from 24
-            width: width() - 40,  // Keeps it inside the screen
+            size: 20,             
+            width: width() - 40,  
             align: "center"
         }),
-        pos(width() / 2, height() / 2 + 100),
+        pos(width() / 2, height() / 2 + 150), // Pushed down slightly so it doesn't overlap the button
         anchor("center"),
         color(150, 150, 255)
     ]);
