@@ -163,7 +163,7 @@ scene("game", () => {
 scene("gameover", (finalScore) => {
     // 1. The Main Score Text
     add([
-        text("Oops! You stopped chanting.\n\nTotal Japs: " + finalScore + " (Approx)\nHigh Score: " + highScore + " (Approx)", { 
+        text("Oops! You stopped chanting.\n\nTotal Japs: " + finalScore + "\nHigh Score: " + highScore, { 
             size: 32,             
             width: width() - 40,  
             align: "center" 
