@@ -1,10 +1,10 @@
 // 1. Initialize the game engine
 kaboom({
     background: [240, 157, 34]
-    // Load the game over sound
-loadSound("gong", "gameover.mp3");
+ 
 });
-
+   // Load the game over sound
+loadSound("gong", "gameover.mp3");
 // Soft gravity
 setGravity(150);
 
