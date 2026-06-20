@@ -2,8 +2,7 @@
 kaboom({
     background: [240, 157, 34]
 });
-// 2. Load the sound AFTER the engine is fully set up
-loadSound("gong", "gameover.mp3");
+
 // Soft gravity
 setGravity(150);
 
@@ -148,17 +147,13 @@ scene("game", () => {
 
     // 5. Game Over Logic
 // 5. Game Over Logic
- // 5. Game Over Logic
     player.onCollide("ground", () => {
-        
-        // --- PLAY THE SOUND AT 25% VOLUME ---
-        play("gong", { volume: 0.25 }); 
-        
         if (score > highScore) {
-            highScore = score; 
+            highScore = score; // Update the variable
+            
+            // NEW: Save it permanently into the browser's memory!
             localStorage.setItem('naamJumpHighScore', highScore);
         }
-        
         go("gameover", score); 
     });
 });
