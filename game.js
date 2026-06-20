@@ -21,14 +21,17 @@ let highScore = parseInt(localStorage.getItem('naamJumpHighScore')) || 0;
 // 2. Setup microphone
 async function setupAudio() {
     try {
-        // Revert to default audio to let the phone handle the mic naturally
+        // 1. Give instant visual feedback
+        document.getElementById('start-btn').innerText = "Loading...";
+
+        // 2. Instantly ask for the microphone. Safari demands this happens right after the click.
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // KEEP THIS: iOS still requires the mic to be explicitly "woken up"
+
+        // 3. NOW build the Web Audio API tools (Safari's webkitAudioContext is handled here)
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContext();
         if (audioContext.state === 'suspended') {
-            await audioContext.resume();
+            audioContext.resume(); 
         }
 
         analyser = audioContext.createAnalyser();
@@ -37,11 +40,31 @@ async function setupAudio() {
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         
+        // 4. Set dynamic thresholds based on their dropdown choice
+        const sensitivity = document.getElementById('mic-sensitivity').value;
+        if (sensitivity === 'high') {
+            jumpThreshold = 20;   
+            breathThreshold = 12;
+        } else if (sensitivity === 'low') {
+            jumpThreshold = 60;   
+            breathThreshold = 40;
+        } else {
+            jumpThreshold = 40;   
+            breathThreshold = 25;
+        }
+        
+        // 5. Hide the HTML menu and transition to the game scene!
         document.getElementById('start-menu').style.display = 'none';
         go("game"); 
+        
     } catch (err) {
         console.error("Microphone error:", err);
-        alert("We need microphone access to play!");
+        alert(
+            "Microphone Access Blocked! 🎙️\n\n" +
+            "Please check your Safari/Chrome settings to allow Microphone access for this website."
+        );
+        // Reset the button so they can try again
+        document.getElementById('start-btn').innerText = "Start Mic & Play";
     }
 }
 
@@ -150,10 +173,11 @@ scene("game", () => {
     // 5. Game Over Logic
 // 5. Game Over Logic
    // 5. Game Over Logic
+ // 5. Game Over Logic
     player.onCollide("ground", () => {
         
-        // --- NEW: PLAY THE SOUND ---
-        play("gong"); 
+        // --- PLAY THE SOUND AT 25% VOLUME ---
+        play("gong", { volume: 0.25 }); 
         
         if (score > highScore) {
             highScore = score; 
